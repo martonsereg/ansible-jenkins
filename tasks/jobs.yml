@@ -1,0 +1,18 @@
+---
+- name: List jobs
+  sudo: yes
+  action: shell java -jar {{ jenkins.cli_dest }} -s http://localhost:8080 list-jobs
+  when: jenkins_jobs is defined
+  register: existing_jobs
+
+- name: Copy jenkins job configs to destination
+  sudo: yes
+  copy: src={{ jenkins.jobs_src }}/{{ item }}.xml dest={{ jenkins.dest }}/{{ item }}.xml
+  with_items: jenkins_jobs
+  when: existing_jobs.changed and existing_jobs.stdout.find('{{ item }}') == -1
+
+- name: Create jenkins jobs
+  sudo: yes
+  shell: java -jar {{ jenkins.cli_dest }} -s http://localhost:8080/ create-job {{ item }} < {{ jenkins.dest }}/{{item}}.xml
+  with_items: jenkins_jobs
+  when: existing_jobs.changed and existing_jobs.stdout.find('{{ item }}') == -1

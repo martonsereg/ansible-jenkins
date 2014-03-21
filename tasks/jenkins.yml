@@ -20,3 +20,9 @@
 
 # Install/update Jenkins plugins
 - include: plugins.yml
+
+# Copy keys to Jenkins destination
+- include: keys.yml
+
+# Install configured jobs in Jenkins
+- include: jobs.yml

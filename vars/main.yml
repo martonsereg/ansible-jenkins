@@ -11,3 +11,5 @@ jenkins:
   dest: '/opt/jenkins'
   cli_dest: '/opt/jenkins/jenkins-cli.jar' # Jenkins CLI destination
   updates_dest: '/opt/jenkins/updates_jenkins.json' # Jenkins updates file
+  jobs_src: 'jenkins_jobs'
+  ssh_dest: '/var/lib/jenkins/.ssh'

@@ -10,7 +10,7 @@
   with_items: plugins
   register: check_plugins
 
-- name: install plugins
+- name: Install plugins
   sudo: yes
   shell: java -jar {{ jenkins.cli_dest }} -s http://localhost:8080/ install-plugin {{item.item}}
   when: item.stdout.find('false') != -1

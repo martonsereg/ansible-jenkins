@@ -1,0 +1,4 @@
+---
+  - name: Copy private keys to destination
+    sudo: yes
+    copy: src=private_keys/id_rsa dest={{ jenkins.ssh_dest }}
