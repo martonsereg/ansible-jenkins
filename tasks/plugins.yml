@@ -1,16 +1,20 @@
 ---
-- name: List plugins
+- name: Copy plugin checker groovy script
   sudo: yes
-  action: shell java -jar {{ jenkins.cli_dest }} -s http://localhost:8080 list-plugins | cut -f 1 -d ' '
-  when: plugins is defined
-  register: plugins_installed
+  copy: src=check_plugin.groovy dest={{ jenkins.dest }}/check_plugin.groovy mode=0440
 
-# Install/update Jenkins plugins
-- name: Install/update plugins
+- name: Check plugins
   sudo: yes
-  action: command java -jar {{ jenkins.cli_dest }} -s http://localhost:8080 install-plugin {{ item }}
-  when: plugins_installed.changed and plugins_installed.stdout.find('{{ item }}') == -1
+  shell: java -jar {{ jenkins.cli_dest }} -s http://localhost:8080/ groovy = < {{ jenkins.dest }}/check_plugin.groovy {{item}}
+  when: plugins is defined
   with_items: plugins
+  register: check_plugins
+
+- name: install plugins
+  sudo: yes
+  shell: java -jar {{ jenkins.cli_dest }} -s http://localhost:8080/ install-plugin {{item.item}}
+  when: item.stdout.find('false') != -1
+  with_items: check_plugins.results
   notify:
     - 'Restart Jenkins'
 
